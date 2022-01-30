@@ -1,6 +1,7 @@
 import requests
 import pandas as pd
 from bs4 import BeautifulSoup
+pd.set_option('precision', 0)
 
 ############ Scraping League of legends Worlds championship
 
@@ -55,8 +56,12 @@ with open('teams.csv','w') as file :
 
 ############## Dataframe
 worlds=pd.read_csv('teams.csv')
+worlds['Rank'] = ['1st', '2nd', '3rd','1st', '2nd', '3rd','1st', '2nd', '3rd','1st', '2nd', '3rd','1st', '2nd', '3rd','1st', '2nd', '3rd','1st', '2nd', '3rd','1st', '2nd', '3rd','1st', '2nd', '3rd','1st', '2nd', '3rd','1st', '2nd', '3rd']
+worlds = worlds.fillna(method='ffill')
 print(worlds)
 
+
+ 
 
  
    
