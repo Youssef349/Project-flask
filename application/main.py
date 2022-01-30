@@ -13,9 +13,11 @@ from numpy import nan
 import pandas as pd
 import requests
 import string
-#import pymongo
 import matplotlib.pyplot as plt
-
+import dash
+from dash import dcc
+from dash import html
+from dash import dash_table
 from bs4 import BeautifulSoup
 
 
@@ -103,6 +105,73 @@ def main():
  graph_More_Cash_Won = plt.subplots(figsize=(50,10))
  graph_More_Cash_Won=plt.bar(tf['Team'],tf['Total_Cash_Won'],1.0,color='r')
  plt.savefig('graph2.png')
+
+ app = dash.Dash(__name__)
+
+ app.layout = html.Div(children=[  
+
+        html.H1(children='Dashboard sur les meilleurs equipes de LOL', style={'textAlign': 'center'}),#titre général du dashboard
+        #Partie présentation du projet / bases de données
+        dcc.Tabs(style={'borderTop':'3px solid #212121', 'borderRadius':'6px', 'boxShadow':'2px 2px 30px #dfe4ea'}, colors={'background':'#dfe4ea'}, id="tabs", children=[   #création des différents "onglets"
+            dcc.Tab(label="Présentation", children=[   #premier onglet
+                html.Div(children=[
+                    html.H1(children='Présentation du projet', style={'textAlign' :'center','background-color':'#dfe4ea'}),#titre de la page
+                    dcc.Textarea(
+                        id='présentation',#id 
+                        title='Présentation du dashboard',#titre en haut de la page
+                        value='Bienvenue!\n\n Nous vous présentons ici un Dashboard sur les meilleurs equipes du jeu vidéo LOL',
+                        style={'fontFamily':'Arial','width':'100%', 'height':'1000', 'textAlign':'left', 'background-color':'#dfe4ea', 'font-size':'medium', 'font-style':'normal', 'resize':'none', 'border':'none'},
+                        readOnly='readOnly',#en lecture seule
+                        draggable='false',
+                        rows='9'#9 lignes
+                    ),
+
+                    html.H1(children='Base de donnée importée : Liste des pays', style={'textAlign':'left'}),#première dataframe
+                    dash_table.DataTable( #affichage de la base de donnée 
+                        data=worlds.to_dict('records'),
+                        columns=[{'id': c, 'name': c} for c in worlds.columns],
+                        page_action='native',
+                        fixed_rows={'headers': True},
+                        style_table={'overflowY': 'auto'},
+                        page_current= 0,
+                        page_size= 10,
+                        filter_action="native"
+                    ),
+
+                ])
+            ]),
+            #Partie graphiques
+            dcc.Tab(label="Analyse par les graphiques", children=[   #deuxième onglet
+                html.Div(children=[
+                    html.H1(children='Différents graphiques', style={'textAlign' :'center', 'background-color':'#dfe4ea'}),#titre de la page
+                        dcc.Textarea(
+                        id='graph',
+                        title='Graphiques',
+                        value='Voici les graphiques permettant une analyse des données.',
+                        style={'fontFamily':'Arial','width':'100%', 'height':'1000', 'textAlign':'left', 'background-color':'#dfe4ea', 'font-size':'medium', 'font-style':'normal', 'resize':'none','border':'none'},
+                        readOnly='readOnly',
+                        draggable='false',
+                        rows='2'
+                    ),
+                        dcc.Graph(#affichage du quatrième graph
+                            id='graph1',
+                            figure= graph_best_team,
+                            style={'boxShadow':'2px 2px 30px #581845e', 'borderRadius':'10px'}
+                        ),
+                         dcc.Graph(#affichage du quatrième graph
+                            id='graph2',
+                            figure=graph_More_Cash_Won,
+                            style={'boxShadow':'2px 2px 30px #581845', 'borderRadius':'10px'}
+                        ),
+                       
+                ]),
+            ]),
+           
+                    
+    ])
+ ])
+
+ app.run_server(debug=True)
 
  return None
 
